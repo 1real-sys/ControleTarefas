@@ -21,7 +21,7 @@ Cada tarefa deve ter:
 - **Título**
 - **Descrição**
 - **Data de criação**
-- **Status** (`PENDENTE` ou `CONCLUÍDA`)
+- **Status** (`PENDENTE`, `EM_ATENDIMENTO` ou `CONCLUIDA`)
 
 ## Regras de Negócio
 
