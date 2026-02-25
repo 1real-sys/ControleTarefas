@@ -2,8 +2,14 @@ package dev.teamwin.controletarefa.Domain;
 
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 @Entity
 @Table(name = "tb_tarefas")
 public class TarefaDomain {
