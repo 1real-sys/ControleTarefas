@@ -1,8 +1,10 @@
 package dev.teamwin.controletarefa.Controller;
 
 
+import dev.teamwin.controletarefa.DTO.TarefaDTO;
 import dev.teamwin.controletarefa.Domain.TarefaDomain;
 import dev.teamwin.controletarefa.Service.TarefaService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,37 +25,38 @@ public class TarefaController {
     }
 
     @PostMapping("/cadastrarTarefa")
-    public TarefaDomain cadastrarTarefa(@RequestBody TarefaDomain tarefa) {
-        return tarefaService.CadastrarTarefa(tarefa);
+    public TarefaDTO cadastrarTarefa(@RequestBody TarefaDTO tarefaDto) {
+        return tarefaService.CadastrarTarefa(tarefaDto);
     }
 
     @GetMapping("/listar")
-    public List<TarefaDomain> listarTarefas() {
+    public List<TarefaDTO> listarTarefas() {
         return tarefaService.ListarTodasTarefas();
    }
 
    @GetMapping("/listar/{id}")
-    public TarefaDomain listarTarefaPorId(@PathVariable Long id) {
+    public TarefaDTO listarTarefaPorId(@PathVariable Long id) {
        return tarefaService.ListarTarefaPorId(id);
    }
 
    @PutMapping("/atualizar/{id}")
-    public TarefaDomain atualizarTarefa(@PathVariable Long id, @RequestBody TarefaDomain tarefaAtualizada) {
+    public TarefaDTO atualizarTarefa(@PathVariable Long id, @RequestBody TarefaDTO tarefaAtualizada) {
        return tarefaService.AtualizarTarefa(id, tarefaAtualizada);
    }
    @PutMapping("/iniciar/{id}")
-   public TarefaDomain iniciarTarefa(@PathVariable Long id) {
+   public TarefaDTO iniciarTarefa(@PathVariable Long id) {
         return tarefaService.IniciarTarefa(id);
    }
     @PutMapping("/concluir/{id}")
-    public TarefaDomain concluirTarefa(@PathVariable Long id) {
+    public TarefaDTO concluirTarefa(@PathVariable Long id) {
         return tarefaService.ConcluirTarefa(id);
     }
 
 
     @DeleteMapping("/deletar/{id}")
-    public void deletarTarefa(@PathVariable Long id) {
-       tarefaService.deletarTarefa(id);
+    public ResponseEntity<String> deletarTarefa(@PathVariable Long id) {
+       String mensagem = tarefaService.deletarTarefa(id);
+       return ResponseEntity.ok(mensagem);
    }
 
 

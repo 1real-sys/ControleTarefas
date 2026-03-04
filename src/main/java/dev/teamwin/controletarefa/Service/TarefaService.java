@@ -1,8 +1,10 @@
 package dev.teamwin.controletarefa.Service;
 
 
+import dev.teamwin.controletarefa.DTO.TarefaDTO;
 import dev.teamwin.controletarefa.Domain.StatusTarefa;
 import dev.teamwin.controletarefa.Domain.TarefaDomain;
+import dev.teamwin.controletarefa.Mapper.TarefaMapper;
 import dev.teamwin.controletarefa.Repository.TarefaRepository;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -19,30 +21,40 @@ import java.util.stream.Collectors;
 public class TarefaService {
 
     private final TarefaRepository tarefaRepository;
+    private final TarefaMapper tarefaMapper;
 
-    public TarefaService(TarefaRepository tarefaRepository) {
+    public TarefaService(TarefaRepository tarefaRepository, TarefaMapper tarefaMapper) {
         this.tarefaRepository = tarefaRepository;
+        this.tarefaMapper = tarefaMapper;
     }
 
-    public TarefaDomain CadastrarTarefa(TarefaDomain tarefa) {
-        return tarefaRepository.save(tarefa);
+    public TarefaDTO CadastrarTarefa(TarefaDTO tarefaDTO) {
+        TarefaDomain DomainTarefa = tarefaMapper.map(tarefaDTO);
+         DomainTarefa = tarefaRepository.save(DomainTarefa);
+        return tarefaMapper.map(DomainTarefa);
     }
 
-    public TarefaDomain ListarTarefaPorId(Long id){
+    public TarefaDTO ListarTarefaPorId(Long id){
         Optional <TarefaDomain> tarefaOptional = tarefaRepository.findById(id);
-        return tarefaOptional.orElse(null);
+        return tarefaOptional.map(tarefaMapper::map).orElse(null);
     }
 
-    public List<TarefaDomain> ListarTodasTarefas(){
-        return tarefaRepository.findAll();
-
+    public List<TarefaDTO> ListarTodasTarefas(){
+        List<TarefaDomain> tarefaDomains = tarefaRepository.findAll();
+        return tarefaDomains.stream()
+                .map(tarefaMapper::map)
+                .collect(Collectors.toList());
     }
 
-    public void deletarTarefa(Long id){
+    public String deletarTarefa(Long id){
+        TarefaDTO tarefaDTO = tarefaRepository.findById(id)
+                .map(tarefaMapper::map)
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
         tarefaRepository.deleteById(id);
+        return "Tarefa " + tarefaDTO.getTitulo() + " foi deletada com sucesso!";
     }
 
-    public TarefaDomain AtualizarTarefa(Long id, TarefaDomain tarefaAtualizada){
+    public TarefaDTO AtualizarTarefa(Long id, TarefaDTO tarefaAtualizada){
         return tarefaRepository.findById(id).map(tarefaExistente -> {
             BeanWrapper origem = new BeanWrapperImpl(tarefaAtualizada);
             BeanWrapper destino = new BeanWrapperImpl(tarefaExistente);
@@ -54,22 +66,25 @@ public class TarefaService {
                     .filter(nome -> !ignorar.contains(nome))
                     .filter(nome -> origem.getPropertyValue(nome) != null)
                     .forEach(nome -> destino.setPropertyValue(nome, origem.getPropertyValue(nome)));
-
-            return tarefaRepository.save(tarefaExistente);
+            TarefaDomain domain = tarefaRepository.save(tarefaExistente);
+            return tarefaMapper.map(domain);
         }).orElse(null);
     }
 
-    public TarefaDomain ConcluirTarefa(Long id){
+    public TarefaDTO ConcluirTarefa(Long id){
         return tarefaRepository.findById(id).map(tarefa -> {
             tarefa.setStatus(StatusTarefa.CONCLUIDA);
-            return tarefaRepository.save(tarefa);
+            TarefaDomain domain = tarefaRepository.save(tarefa);
+            return tarefaMapper.map(domain);
         }).orElse(null);
     }
 
-    public TarefaDomain IniciarTarefa(Long id){
+    public TarefaDTO IniciarTarefa(Long id){
         return tarefaRepository.findById(id).map(tarefa -> {
             tarefa.setStatus(StatusTarefa.EM_ATENDIMENTO);
-            return tarefaRepository.save(tarefa);
+            TarefaDomain domain = tarefaRepository.save(tarefa);
+            return tarefaMapper.map(domain);
+
         }).orElse(null);
     }
 
