@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 @NoArgsConstructor
@@ -28,6 +29,11 @@ public class TarefaDomain {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusTarefa status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    private UserDomain usuario;
 
     @PrePersist
     private void definirValoresIniciais() {

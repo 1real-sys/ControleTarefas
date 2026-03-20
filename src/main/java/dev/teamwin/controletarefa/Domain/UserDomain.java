@@ -5,12 +5,15 @@ import lombok.*;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString
 @Table(name = "tb_users")
 public class UserDomain {
 
@@ -34,6 +37,10 @@ public class UserDomain {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<TarefaDomain> tarefas = new ArrayList<>();
 
     @PrePersist
     private void prePersist() {
